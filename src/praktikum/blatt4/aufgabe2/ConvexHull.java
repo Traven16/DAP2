@@ -31,7 +31,7 @@ public class ConvexHull {
 	private Point[] points;
 	private ArrayList<Point> convexHull;
 	
-	private int pointAmount = 50, pointAmountIncreaseFactor = 1;
+	private int pointAmount = 60, pointAmountIncreaseFactor = 1;
 	private int minWidth = -1000, maxWidth = 1000, minHeight = -1000, maxHeight = 1000;
 	private final int pointSize = 5;
 	
