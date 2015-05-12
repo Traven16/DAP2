@@ -33,7 +33,7 @@ public class ConvexHull {
 	
 	private int pointAmount = 60, pointAmountIncreaseFactor = 1;
 	private int minWidth = -1000, maxWidth = 1000, minHeight = -1000, maxHeight = 1000;
-	private final int pointSize = 5;
+	private final int pointSize = 4;
 	
 	/**
 	 * Entrance point

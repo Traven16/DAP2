@@ -14,12 +14,12 @@ import java.util.Random;
 public class Sorting {
 	
 	/* Attributes */
-	private static final byte INSERTIONSORT = 0, MERGESORT = 1, BUBBLESORT = 2;
+	private static final byte INSERTIONSORT = 0, MERGESORT = 1, BUBBLESORT = 2, QUICKSORT = 3;
 	private static final Random random = new Random();
 	private static final String infoMsg = "\nINFO:\nAufruf lediglich mit 1, 2, 3 oder 4 Parametern gestattet:\n"
 										+ "\t1. Parameter: Groesse des zu initialisierenden Feldes (positiver int Wert!)\n"
 										+ "\t2. Parameter: Fuellart(\"auf\", \"ab\", \"rand\")\n"
-										+ "\t3. Parameter: Zu verwendender Sortieralagorithmus(\"insertion\", \"merge\", \"bubble\", \"all\")\n"
+										+ "\t3. Parameter: Zu verwendender Sortieralagorithmus(\"insertion\", \"merge\", \"bubble\",  \"quick\", \"all\")\n"
 										+ "\t4. Parameter: Ziellaufzeit als float.\n"
 										+ "Sollte kein zweiter Parameter definiert werden, wird das Feld mit zufaelligen Werten (\"rand\") gefuellt.\n"
 										+ "Sollte kein dritter Parameter definiert werden, werden alle Sortieralgorithmen (\"all\") nacheinander ausgefuehrt.\n"
@@ -39,11 +39,11 @@ public class Sorting {
 	 * @param args Program arguments
 	 */
 	public Sorting(String[] args) {
-		args = new String[4];
-		args[0] = "50000";
-		args[1] = "ab";
-		args[2] = "merge";
-		args[3] = "1.7";
+		args = new String[3];
+		args[0] = "5000000";
+		args[1] = "rand";
+		args[2] = "all";
+//		args[3] = "1.7";
 		
 		boolean printError = false;
 		
@@ -109,7 +109,7 @@ public class Sorting {
 		
 		//3.Parameter auslesen
 		if(args.length > 2)
-			if(args[2].equals("insertion") || args[2].equals("merge") || args[2].equals("bubble") || args[2].equals("all"))
+			if(args[2].equals("insertion") || args[2].equals("merge") || args[2].equals("bubble") || args[2].equals("quick") || args[2].equals("all"))
 				algorithmToUse = args[2];
 			else {
 				System.out.println("ERROR: 3. Parameter konnte nicht verarbeitet werden!\nEs wird mit allen Algorithmen sortiert (\"all\").");
@@ -129,7 +129,7 @@ public class Sorting {
 			}
 		} else {
 			System.out.println("Hinweis: Es wurde keine Ziellaufzeit (4. Parameter) angegeben!\n");
-			printError = true;
+//			printError = true;
 		}
 		
 		//Wenn Fehler aufgetreten ist -> Zeige InfoMsg
@@ -169,15 +169,21 @@ public class Sorting {
 				if(targetTime >= 0)	findArraySize(targetTime, data, BUBBLESORT);
 				else				sortArrayWith(createCopy(data), BUBBLESORT);
 				break;
+			case "quick":
+				if(targetTime >= 0)	findArraySize(targetTime, data, QUICKSORT);
+				else				sortArrayWith(createCopy(data), QUICKSORT);
+				break;
 			case "all":
 				if(targetTime >= 0)	{
-					findArraySize(targetTime, data, INSERTIONSORT);
+//					findArraySize(targetTime, data, INSERTIONSORT);
 					findArraySize(targetTime, data, MERGESORT);
-					findArraySize(targetTime, data, BUBBLESORT);
+//					findArraySize(targetTime, data, BUBBLESORT);
+					findArraySize(targetTime, data, QUICKSORT);
 				} else {
-					sortArrayWith(createCopy(data), INSERTIONSORT);
+//					sortArrayWith(createCopy(data), INSERTIONSORT);
 					sortArrayWith(createCopy(data), MERGESORT);
-					sortArrayWith(createCopy(data), BUBBLESORT);
+//					sortArrayWith(createCopy(data), BUBBLESORT);
+					sortArrayWith(createCopy(data), QUICKSORT);
 				}
 				break;
 		}
@@ -276,6 +282,10 @@ public class Sorting {
 				usedAlgorithm = "Bubblesort";
 				break;
 				
+			case QUICKSORT:
+				usedAlgorithm = "Quicksort";
+				break;
+				
 			default:
 				System.err.println("Incorrect definition of the algorithmDeclaration parameter!");
 				System.exit(1);
@@ -290,25 +300,16 @@ public class Sorting {
 		}
 		
 		//Array mit Zeitmessung sortieren
+		timeStart = System.currentTimeMillis();
+		
 		switch(algorithmDeclaration) {
-			case INSERTIONSORT:
-				timeStart = System.currentTimeMillis();
-				insertionSort(array);
-				timeEnd = System.currentTimeMillis();
-				break;
-			
-			case MERGESORT:
-				timeStart = System.currentTimeMillis();
-				mergeSort(array);
-				timeEnd = System.currentTimeMillis();
-				break;
-				
-			case BUBBLESORT:
-				timeStart = System.currentTimeMillis();
-				bubbleSort2(array);
-				timeEnd = System.currentTimeMillis();
-				break;
+			case INSERTIONSORT:	insertionSort(array);					break;
+			case MERGESORT:		mergeSort(array);						break;	
+			case BUBBLESORT:	bubbleSort(array);						break;
+			case QUICKSORT:		quicksort(array, 0, array.length-1);	break;
 		}
+		
+		timeEnd = System.currentTimeMillis();
 		
 		//Array nach Sortierung ausgeben, wenn groesse 100 nicht ueberschreitet
 		if(array.length <= 100) {
@@ -401,7 +402,6 @@ public class Sorting {
 	 * Sorts the given int array using the bubblesort algorithm.
 	 * @param array int array
 	 */
-	@SuppressWarnings("unused")
 	private void bubbleSort(int[] array) {
 		boolean exchanged = true; //Hilfsvariable
 		
@@ -420,15 +420,42 @@ public class Sorting {
 		}
 	}
 	
-	private void bubbleSort2(int[] array) {
-		for(int i = 0; i < array.length; i++) {
-			for(int j = array.length - 1; j > i; j--) {
-				//Tausche aktuelles Element mit Vorgaenger, falls dieser kleiner ist
-				if(array[j-1] > array[j]) {
-					swap(array, j, j - 1);
+	/**
+	 * Sorts the given array using the quicksort algorithm.
+	 * @param array int-array
+	 * @param left Index of leftmost element
+	 * @param right Index of rightmost element
+	 */
+	private void quicksort(int[] array, int left, int right){
+		if(left < right) {
+			//Setze Zeigervariablen auf left und right
+			int i = left;
+			int j = right;
+			
+			//Setze Pivotelement auf mittleres Element des aktuell zu sortierenden Arrayteils
+			int pivot = array[(left + right) / 2];
+			
+			while(i <= j) {
+				//Lasse Zeigervariablen gegeneinanderlaufen, solange kein Tausch von Noeten ist
+				while(array[i] < pivot)
+					i++;
+				while(array[j] > pivot)
+					j--;
+				
+				if( i <= j ) {
+					int tmp = array[i];
+					array[i] = array[j];
+					array[j] = tmp;
+					i++;
+					j--;
 				}
 			}
+			
+			//Rekursive Aufrufe fuer Teillisten
+			quicksort(array, left, j);
+			quicksort(array, i, right);
 		}
+		
 		assert isSorted(array);
 	}
 	
