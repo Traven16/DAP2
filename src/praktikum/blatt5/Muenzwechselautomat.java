@@ -13,7 +13,7 @@ public class Muenzwechselautomat {
 	 */
 	public static void main(String[] args) {
 		args = new String[2];
-		args[0] = "Alternative";
+		args[0] = "Euro";
 		args[1] = "455";
 		
 		//Pruefen, ob alle benoetigten Eingaben getaetigt wurden
@@ -54,14 +54,10 @@ public class Muenzwechselautomat {
 	 * @param amount Geldmenge
 	 */
 	public Muenzwechselautomat(final int amount, int[] w) {
-//		for(int i = 0; i < 10; i++) {
-//			int random = Calculator.randomInt(0, 2000);
-//			System.out.print("Betrag [ct]:\t" + random + "\t->\t");
-//			printArray(change(random, w));
-//		}
+		for(int i = 0; i < 10; i++)
+			change(Calculator.randomInt(0, 2000), w);
 		
-		System.out.print("Betrag [ct]:\t" + amount + "\t->\t");
-		printArray(change(amount, w));
+//		change(amount, w);
 	}
 	
 	/**
@@ -77,6 +73,9 @@ public class Muenzwechselautomat {
 			result[i] = amount / w[i];
 			amount -= result[i] * w[i];
 		}
+		
+		System.out.print("Betrag [ct]:\t" + amount + "\t->\t");
+		printArray(result);
 		
 		return result;
 	}
