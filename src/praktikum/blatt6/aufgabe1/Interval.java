@@ -15,8 +15,8 @@ public class Interval implements Comparable<Interval> {
 	
 	/**
 	 * Creates an interval object using the given satrt and end values.
-	 * @param start Staring point of the interval
-	 * @param end Ending point of the interval
+	 * @param start Staring point of the interval.
+	 * @param end Ending point of the interval.
 	 */
 	public Interval(final int start, final int end) {
 		this.start = start;
