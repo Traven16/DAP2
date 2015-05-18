@@ -48,6 +48,12 @@ public class Program {
 			return;
 		}
 		
+		//Check whether intervls were loaded
+		if(intervals.size() == 0) {
+			System.err.println("Zero intervals were properly loaded :D\nProgram terminates...");
+			return;
+		}
+		
 		// ----- Intervals loaded! -----
 		
 		//Sort intervals
@@ -56,16 +62,50 @@ public class Program {
 		//Print sorted intervals
 		System.out.println("Sortiert:");
 		printArrayList(intervals);
+		System.out.println();
 		
+		//Calculate and print the scheduling of the loaded intervals
+		ArrayList<Interval> scheduling = intervalScheduling(intervals);
+		System.out.println("Berechnetes Intervallscheduling:");
+		printArrayList(scheduling);
+		System.out.println("---------------------------------------------------\n");
+	}
+	
+	/**
+	 * Implements the interval scheduling algorithm.<br>
+	 * Returns null if a null reference was given or if the given array list held no elements.
+	 * @param intervals A sorted array list of intervals to schedule.
+	 * @return Scheduling results in a new ArrayList object holding references to the used intervals.
+	 */
+	public static ArrayList<Interval> intervalScheduling(final ArrayList<Interval> intervals) {
+		//Create a new arra list that will hold the scheduling results
+		ArrayList<Interval> scheduling = new ArrayList<>();
+		
+		//Check if given array list was empty or null
+		if(intervals == null || intervals.size() == 0) {
+			System.err.println("intervalScheduling: Given array list was null or held 0 elements!");
+			return null;
+		}
+		
+		//Add the first interval to the results. Its guaranteed taht the first element of a properly sorted list ends first.
+		scheduling.add(intervals.get(0));
+		
+		//Add every next interval that starts after or at the same time the previous interval that got added to the scheduling ended
+		for(int i = 0; i < intervals.size() - 1; i++)
+			if(intervals.get(i + 1).getStart() >= intervals.get(i).getEnd())
+				scheduling.add(intervals.get(i + 1));
+		
+		//Return the processed scheduling
+		return scheduling;
 	}
 	
 	/**
 	 * Loads the interval data from the given File-object into an ArrayList<Interval> object.<br>
 	 * Immediately returns null if an error occurs!
-	 * @param file The File-object to read from
-	 * @return ArrayList of intervals
+	 * @param file The File-object to read from.
+	 * @return ArrayList of intervals.
 	 */
-	public static ArrayList<Interval> loadIntervals(final File file) {
+	private static ArrayList<Interval> loadIntervals(final File file) {
 		//Create the ArrayList object that gets returned after the file got read
 		final ArrayList<Interval> intervals = new ArrayList<>();
 		int lineCount = 0;
@@ -121,15 +161,10 @@ public class Program {
 		return intervals;
 	}
 	
-	public static ArrayList<Interval> intervalScheduling(ArrayList<Interval> intervals) {
-		return intervals;
-	}
-	
-	
 	/**
 	 * Prints all elements seperated by commas in one line into the standard output strem.
 	 * toString() method of T need to be overriden!
-	 * @param arrayList ArrayList object whose elements get printed 
+	 * @param arrayList ArrayList object whose elements get printed .
 	 */
 	private static <T> void printArrayList(final ArrayList<T> arrayList) {
 		for(int i = 0; i < arrayList.size() - 1; i++) {
