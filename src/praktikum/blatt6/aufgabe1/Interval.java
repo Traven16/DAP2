@@ -8,7 +8,7 @@ package praktikum.blatt6.aufgabe1;
  * @time 18.05.2015 22:08
  */
 
-public class Interval {
+public class Interval implements Comparable<Interval> {
 	
 	/* Attributes */
 	private int start, end;
@@ -61,6 +61,18 @@ public class Interval {
 	@Override
 	public String toString() {
 		return "[" + start + ", " + end + "]";
+	}
+	
+	@Override
+	public int compareTo(Interval other) {
+		if(end < other.getEnd())
+			return -1;
+		
+		else if(end > other.getEnd())
+			return 1;
+		
+		//Objects are equal
+		return 0;
 	}
 	
 }
