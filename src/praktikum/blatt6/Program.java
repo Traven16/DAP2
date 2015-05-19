@@ -121,6 +121,12 @@ public class Program {
 			System.out.println("Maximale Verspaetung: " + scheduling[scheduling.length - 1]);
 		}
 		
+		//Check for illegal program argument
+		else {
+			System.err.println("Illegal program argument passed: \"" + args[0] + "\"\nProgram terminates...");
+			return;
+		}
+		
 		System.out.println("---------------------------------------------------\n");
 	}
 	
